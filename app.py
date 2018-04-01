@@ -1,5 +1,5 @@
 import sqlite3
-from flask import Flask
+from flask import Flask, render_template, redirect, request
 
 conn = sqlite3.connect('project.db')
 c = conn.cursor()
@@ -15,7 +15,7 @@ def makeTables():
         then c.execute->CREATE TABLE STUDENTS will throw an exception.
   """
   try:
-    c.execute('''CREATE TABLE students
+    c.execute('''CREATE TABLE IF EXISTS students
              (ssn, studentId, fname, lname)''')
   except:
     print('Students table already exists, no need to create.')
@@ -23,7 +23,7 @@ def makeTables():
 
 def deleteAllTables():
   try:
-    c.execute('''DROP TABLE students''')
+    c.execute('''DROP TABLE IF EXISTS students''')
   except:
     print('No table students exists')
   pass  
@@ -39,7 +39,7 @@ makeTables()
 # flask documentation for render_template
 @app.route("/")
 def index():
-  return "Hello World"
+  return render_template('homepage.html', someDataHere='yo yo yo')
 
 
 
