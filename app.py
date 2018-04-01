@@ -42,6 +42,14 @@ def populateTables(ssn, sId, fname, lname):
     print(e)
   pass
 
+
+def getStudentTable():
+  try:
+    c.execute('''SELECT * FROM students''')
+    return c.fetchall()
+  except Error as e:
+    print(e)
+
 def deleteAllTables():
   print("  Deleting tables:")
   try:
@@ -60,7 +68,7 @@ makeTables()
 populateTables(123, 456, 'Richard', 'Stanley')
 populateTables(234, 567, 'Georden', 'Grabuskie')
 populateTables(345, 678, 'Chantelle', 'Bril')
-
+print(getStudentTable())
 
 # Here is the Flask API.  We should look into the 
 # flask documentation for render_template
