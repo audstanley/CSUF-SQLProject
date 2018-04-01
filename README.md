@@ -13,3 +13,21 @@ Contributers:
   * Richard Stanley
   * Georden Grabuskie
   * Chantelle Bril
+
+-----
+
+Dependencies:
+  * pip
+
+    ```sh
+      sudo apt-get install python-pip;
+    ```
+
+
+  * Flask
+
+    ```sh
+    sudo pip install flask;
+    ```
+
+  *  sqlite3 (included with python2.7)
