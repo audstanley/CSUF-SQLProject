@@ -41,16 +41,18 @@ populateTables('audstanley@gmail.com', 345, 678, 'Chantelle', 'Bril')
 @app.route("/")
 def index():
   d = getStudentTable('audstanley@gmail.com')
+
   dictData = map(lambda x: dict({'ssn':x[0], 'studentId': x[1], 'fname': x[2], 'lname': x[3]}), d)
   print 'data:', dictData
-  return redirect('login')
-  #return render_template('homepage.html', someDataHere=dictData)
+  #return redirect('login')
+  return render_template('homepage.html', someDataHere=dictData)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
+      print(form.data)
       return 'We will need to do things in the database...'
     return render_template('login.html', login=form)
 
@@ -58,17 +60,20 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
-    if form.validate_on_submit():
-      # Need to save the CSRF token in database
-      # This token will be used to access the user's personal database
-      # form.data reveals the email, two passwords, and CSRF token.
-      # This token changes everytime they reopen their browser,
-      # so we CAN use it as a static address for their home page, as long
-      # as we update the user.db everytime they LOGIN.  We might want to
-      # consider saving a timestamp in the user.db for last login, so we can
-      # timout the user's CSRF Token from being valid
-      print(form.data)
-      return 'We will need to register in the database...'
+    if request.method == 'POST':
+      if form.validate_on_submit():
+        # Need to save the CSRF token in database
+        # This token will be used to access the user's personal database
+        # form.data reveals the email, two passwords, and CSRF token.
+        # This token changes everytime they reopen their browser,
+        # so we CAN use it as a static address for their home page, as long
+        # as we update the user.db everytime they LOGIN.  We might want to
+        # consider saving a timestamp in the user.db for last login, so we can
+        # timout the user's CSRF Token from being valid
+        print(form.data)
+        return 'We will need to register in the database...'
+      else:
+        return 'NO VALID DATA'
     return render_template('register.html', register=form)
 
 @app.route('/home/<hash>', methods=['GET', 'POST'])
