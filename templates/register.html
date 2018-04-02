@@ -1,0 +1,16 @@
+<html>
+  <body>
+    <h1>Registration Page</h1>
+    <form method="POST" action="{{ url_for('register') }}">
+      {{register.csrf_token}}
+      {{register.username.label}} &nbsp; &nbsp; &nbsp;
+      {{register.username}} <p>
+      {{register.password1.label}}
+      {{register.password1}} <p>
+      {{register.password2.label}}
+      {{register.password2}} <p>
+      <input type="submit", value="submit">
+    </form>
+    <a href="login">Login</a>
+  </body>
+</html>
