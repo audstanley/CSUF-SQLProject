@@ -32,7 +32,7 @@ def populateTables(ssn, sId, fname, lname):
   try:
     c.execute('''INSERT INTO students
              (ssn, studentId, fname, lname)
-             values(?,?,?,?)''', (ssn, sId, fname, lname))
+             values(%d,%d,%s,%s)''', (ssn, sId, fname, lname))
 
     conn.commit()
   except Error as e:

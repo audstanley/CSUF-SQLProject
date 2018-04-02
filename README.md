@@ -9,25 +9,29 @@ todos:
 - [ ] Write different queries, maybe make drop down menues for form types.
 
 
-Contributers:
+#### Contributers:
   * Richard Stanley
   * Georden Grabuskie
   * Chantelle Bril
 
 -----
 
-Dependencies:
+#### Dependencies:
+  * python2.7 (comes with linux mint)
   * pip
-
-    ```sh
-      sudo apt-get install python-pip;
-    ```
-
-
   * Flask
+  * flask-login
+  * WTForms
+  * flask_wtf
+  * sqlite3 (included with python2.7)
 
-    ```sh
+#### Installation Block:
+  ```sh
+    sudo apt-get install python-pip;
+    sudo pip --upgrade python-pip;
     sudo pip install flask;
+    sudo pip install flask;
+    sudo pip install WTForms;
+    sudo pip install flask_wtf;
+    
     ```
-
-  *  sqlite3 (included with python2.7)
