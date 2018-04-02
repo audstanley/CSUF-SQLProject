@@ -1,12 +1,13 @@
 import sqlite3
 from sqlite3 import Error
 
-conn = sqlite3.connect('project.db', check_same_thread=False)
-c = conn.cursor()
+
 
 print('\n\nDatabase Operations:')
 
-def makeTables():
+def makeTables(email):
+  conn = sqlite3.connect(email + '.db', check_same_thread=False)
+  c = conn.cursor()
   print("  Creating tables:")
   """
     This function creates all the tables we need.
@@ -27,12 +28,14 @@ def makeTables():
     print(e)
 
 
-def populateTables(ssn, sId, fname, lname):
+def populateTables(email, ssn, sId, fname, lname):
+  conn = sqlite3.connect(email + '.db', check_same_thread=False)
+  c = conn.cursor()
   print "  Populating student table:", ssn, sId, fname, lname
   try:
     c.execute('''INSERT INTO students
              (ssn, studentId, fname, lname)
-             values(%d,%d,%s,%s)''', (ssn, sId, fname, lname))
+             values(?,?,?,?)''', (ssn, sId, fname, lname))
 
     conn.commit()
   except Error as e:
@@ -40,14 +43,18 @@ def populateTables(ssn, sId, fname, lname):
   pass
 
 
-def getStudentTable():
+def getStudentTable(email):
+  conn = sqlite3.connect(email + '.db', check_same_thread=False)
+  c = conn.cursor()
   try:
     c.execute('''SELECT * FROM students''')
     return c.fetchall()
   except Error as e:
     print(e)
 
-def deleteAllTables():
+def deleteAllTables(email):
+  conn = sqlite3.connect(email + '.db', check_same_thread=False)
+  c = conn.cursor()
   print("  Deleting tables:")
   try:
     c.execute('''DROP TABLE students''')

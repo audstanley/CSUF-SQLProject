@@ -33,5 +33,6 @@ todos:
     sudo pip install flask;
     sudo pip install WTForms;
     sudo pip install flask_wtf;
+    sudo pip install flask_login;
     
     ```
