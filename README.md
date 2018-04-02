@@ -37,8 +37,8 @@ todos:
   ```
 
 Outside Documentation:
-  * (Flask)[http://flask.pocoo.org/docs/0.12/]
-  * (flask_login)[https://flask-login.readthedocs.io/en/latest/]
-  * (WTForms)[https://wtforms.readthedocs.io/en/stable/]
-  * (flask_wtf)[https://flask-wtf.readthedocs.io/en/stable/]
-  * (sqlite python)[https://docs.python.org/2/library/sqlite3.html]
+  * [Flask](http://flask.pocoo.org/docs/0.12/)
+  * [flask_login](https://flask-login.readthedocs.io/en/latest/)
+  * [WTForms](https://wtforms.readthedocs.io/en/stable/)
+  * [flask_wtf](https://flask-wtf.readthedocs.io/en/stable/)
+  * [sqlite python](https://docs.python.org/2/library/sqlite3.html)
