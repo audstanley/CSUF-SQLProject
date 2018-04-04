@@ -5,6 +5,33 @@ from sqlite3 import Error
 
 print('\n\nDatabase Operations:')
 
+def initPending(initEmail, initHashword):
+  conn = sqlite3.connect('users.db', check_same_thread=False)
+  c = conn.cursor()
+  print("  Creating tables:")
+  """
+    This function creates all the tables we need.
+    It's important to wrap every sql query in a try/except
+    block since pyton will crash if there is an error.
+      For example:
+        if the table students already exists, 
+        then c.execute->CREATE TABLE STUDENTS will throw an exception.
+  """
+  try:
+    args = [initEmail, initHashword]
+    c.execute('''CREATE TABLE IF NOT EXISTS pending_students
+             (email string PRIMARY KEY, 
+             hashword string NOT NULL,
+             studentID integer, 
+             fname text, 
+             lname text)''')
+    c.execute('INSERT INTO pending_students (email, hashword) VALUES (?, ?)', args)
+
+    conn.commit()
+  except Error as e:
+    print(e)
+
+
 def makeTables(email):
   conn = sqlite3.connect(email + '.db', check_same_thread=False)
   c = conn.cursor()
