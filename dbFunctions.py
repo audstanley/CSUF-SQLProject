@@ -1,36 +1,63 @@
 import sqlite3
 from sqlite3 import Error
 
-
-
 print('\n\nDatabase Operations:')
 
-def initPending(initEmail, initHashword):
+def initPending(initEmail, initHashword, hashLink):
+  print('    ' + initEmail + '\n      ' + initHashword + '\n      ' + hashLink)
   conn = sqlite3.connect('users.db', check_same_thread=False)
   c = conn.cursor()
-  print("  Creating tables:")
   """
-    This function creates all the tables we need.
-    It's important to wrap every sql query in a try/except
-    block since pyton will crash if there is an error.
-      For example:
-        if the table students already exists, 
-        then c.execute->CREATE TABLE STUDENTS will throw an exception.
+  :param arg1:
+  :param arg2:
+  :param arg3: A random hash to be pushed to cell phone for approval.
+  .. note: This function creates a pending user in the pendingUsers.db
+      Once the user is approved with an API link that is generated
+      with a random hash, the pending_user will be moved over to the
+        user table.  The user table will be the table that is checked 
+        on login.
+  .. todo: test to see if this works
   """
   try:
-    args = [initEmail, initHashword]
-    c.execute('''CREATE TABLE IF NOT EXISTS pending_students
+    args = [initEmail, initHashword, hashLink]
+    c.execute('''CREATE TABLE IF NOT EXISTS pending_users
              (email string PRIMARY KEY, 
              hashword string NOT NULL,
-             studentID integer, 
-             fname text, 
-             lname text)''')
-    c.execute('INSERT INTO pending_students (email, hashword) VALUES (?, ?)', args)
-
+             hashlink string NOT NULL)''')
+    c = conn.cursor()
+    c.execute('INSERT INTO pending_users (email, hashword, hashlink) VALUES (?, ?, ?)', args)
     conn.commit()
   except Error as e:
     print(e)
 
+def initUser(hashLink):
+  """
+    :param arg1: A hash that was generated for a pending_user. Not the password hash.
+    :return: Void
+    :rtype: Void
+
+    .. note:  This hash will be pushed to the admins as a link, example:
+      http://ww2.audstanley.com:5000/usersPending/awdoOOIdwahwaoawhdODHawOHADWhwiwad292822baiiawidu
+      where "awdoOOIdwahwaoawhdODHawOHADWhwiwad292822baiiawidu" would be the hashlink.
+      Flask will approve that user once an admin clicks on the link.
+      We will use the pushover API and the pushover android app to make the link push our cell phones.
+
+    .. todo: test to see if this function works.
+
+  """
+  conn = sqlite3.connect('users.db', check_same_thread=False)
+  c = conn.cursor()
+  try:
+    email, hashPass = c.execute('''SELECT email,password FROM pending_users WHERE hashlink == "%s"''' % hashLink)
+    if email is not None and hashPass is not None:
+      print('pending user:', email, ' was found, moving them to the user table.')
+      c.execute('''CREATE TABLE IF NOT EXISTS users
+              (email string PRIMARY KEY, 
+              hashword string NOT NULL)''')
+      c.execute('INSERT INTO users (email, hashword) VALUES (?, ?)', email, hashPass)
+      conn.commit()
+  except Error as e:
+    print(e)
 
 def makeTables(email):
   conn = sqlite3.connect(email + '.db', check_same_thread=False)
@@ -89,6 +116,3 @@ def deleteAllTables(email):
   except Error as e:
     print(e)
   pass  
-
-def get(tableName):
-  pass

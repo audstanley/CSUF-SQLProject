@@ -1,11 +1,17 @@
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, request, session
 from dbFunctions import deleteAllTables, makeTables, populateTables, getStudentTable, initPending
 from flask_login import LoginManager
 from flask_wtf import FlaskForm
+import random
+import string
 from wtforms import Form, StringField, PasswordField, validators
 from os import urandom #salt
 import bcrypt
 
+def randHashlink():
+  return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in range(128))
+
+print('  Example of hashLink:\n    ' +  randHashlink())
 
 app = Flask(__name__)
 
@@ -39,6 +45,16 @@ populateTables('audstanley@gmail.com', 123, 456, 'Richard', 'Stanley')
 populateTables('audstanley@gmail.com', 234, 567, 'Georden', 'Grabuskie')
 populateTables('audstanley@gmail.com', 345, 678, 'Chantelle', 'Bril')
 
+# Generate fake pending users:
+print('  Generating fake pending users:')
+initPending('newUser1@yahoo.com', bcrypt.hashpw('password', bcrypt.gensalt()), randHashlink())
+initPending('newUser2@hotmail.com', bcrypt.hashpw('password', bcrypt.gensalt()), randHashlink())
+initPending('newUser3@gmail.com', bcrypt.hashpw('password', bcrypt.gensalt()), randHashlink())
+initPending('newUser4@netflix.com', bcrypt.hashpw('password', bcrypt.gensalt()), randHashlink())
+# Generate fake users:
+print('  Generating fake users:')
+
+
 # Here is the Flask API.  We should look into the 
 # flask documentation for render_template
 @app.route("/")
@@ -55,13 +71,16 @@ def index():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-      c.execute('IF EXISTS (SELECT hashword FROM pending_students WHERE email = ?)', request.form["username"])
-      if bcrypt.checkpw(password, hashword):
-        print("Password verified.")
-      else:
-        print("Incorrect username or password!")
-      print(form.data)
+
+      session['username'] = request.form['email']
+      
+      #c.execute('IF EXISTS (SELECT hashword FROM pending_students WHERE email = ?)', request.form["username"])
+      #if bcrypt.checkpw(password, hashword):
+      #  print("Password verified.")
+    else:
+      print("Incorrect username or password!")
       return 'We will need to do things in the database...'
+    print(form.data)
     return render_template('login.html', login=form)
 
 
