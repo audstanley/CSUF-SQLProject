@@ -71,7 +71,7 @@ def index():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-
+      
       session['username'] = request.form['email']
       
       #c.execute('IF EXISTS (SELECT hashword FROM pending_students WHERE email = ?)', request.form["username"])
@@ -101,7 +101,7 @@ def register():
           #   print("It Matches!")
           #else:
           #   print("It Does not Match :(")
-          initPending(request.form["username"], hashword)
+          initPending(request.form["username"], hashword, randHashlink())
         else:
           print("Passwords do NOT match!")
         

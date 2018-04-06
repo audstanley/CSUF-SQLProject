@@ -3,14 +3,26 @@ from sqlite3 import Error
 
 print('\n\nDatabase Operations:')
 
+"""
+
+  #-------------------------------------------
+  #  USERS.DB FUNCTIONS
+  #-------------------------------------------
+
+"""
+
+
+
 def initPending(initEmail, initHashword, hashLink):
   print('    ' + initEmail + '\n      ' + initHashword + '\n      ' + hashLink)
   conn = sqlite3.connect('users.db', check_same_thread=False)
   c = conn.cursor()
   """
-  :param arg1:
-  :param arg2:
+  :param arg1: The users email address.
+  :param arg2: A bcrypt password, hashed and salted.
   :param arg3: A random hash to be pushed to cell phone for approval.
+  :return: True if user was successfully added to database
+  :rtype Bool
   .. note: This function creates a pending user in the pendingUsers.db
       Once the user is approved with an API link that is generated
       with a random hash, the pending_user will be moved over to the
@@ -24,9 +36,27 @@ def initPending(initEmail, initHashword, hashLink):
              (email string PRIMARY KEY, 
              hashword string NOT NULL,
              hashlink string NOT NULL)''')
-    c = conn.cursor()
     c.execute('INSERT INTO pending_users (email, hashword, hashlink) VALUES (?, ?, ?)', args)
     conn.commit()
+    return True
+  except Error as e:
+    print(e)
+    return False
+
+
+def checkPendingUser(email, hashWord):
+  """
+    docstring
+  """
+  conn = sqlite3.connect('users.db', check_same_thread=False)
+  c = conn.cursor()
+  try:
+    c.execute('''SELECT email,hashword FROM pending_users WHERE email == "%s"''' % email)
+    user = c.fetchall()
+    if len(user) > 0:
+      print(user)
+    else:
+      print('There is no pending user with the email address:', email)
   except Error as e:
     print(e)
 
@@ -58,6 +88,18 @@ def initUser(hashLink):
       conn.commit()
   except Error as e:
     print(e)
+
+
+
+
+
+"""
+
+  #-------------------------------------------
+  #  *EMAIL_ADDRESS*.DB FUNCTIONS
+  #-------------------------------------------
+
+"""
 
 def makeTables(email):
   conn = sqlite3.connect(email + '.db', check_same_thread=False)
