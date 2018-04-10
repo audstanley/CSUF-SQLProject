@@ -24,6 +24,8 @@ todos:
   * WTForms
   * flask_wtf
   * sqlite3 (included with python2.7)
+  * requests
+  * pushover
 
 #### Installation Block:
   ```sh
@@ -33,7 +35,8 @@ todos:
     sudo pip install WTForms;
     sudo pip install flask_wtf;
     sudo pip install flask_login;
-    
+    sudo pip install requests;
+    sudo pip install pushover
   ```
 
 Outside Documentation:

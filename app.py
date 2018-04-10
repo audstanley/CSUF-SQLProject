@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, request, session
-from dbFunctions import deleteAllTables, makeTables, populateTables, getStudentTable, initPending
+from dbFunctions import deleteAllTables, makeTables, populateTables, getStudentTable, initPending, initUser, checkPendingUser, getHashwordFromEmail
 from flask_login import LoginManager
 from flask_wtf import FlaskForm
 import random
@@ -9,7 +9,7 @@ from os import urandom #salt
 import bcrypt
 
 def randHashlink():
-  return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in range(128))
+  return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in range(32))
 
 print('  Example of hashLink:\n    ' +  randHashlink())
 
@@ -47,10 +47,10 @@ populateTables('audstanley@gmail.com', 345, 678, 'Chantelle', 'Bril')
 
 # Generate fake pending users:
 print('  Generating fake pending users:')
-initPending('newUser1@yahoo.com', bcrypt.hashpw('password', bcrypt.gensalt()), randHashlink())
-initPending('newUser2@hotmail.com', bcrypt.hashpw('password', bcrypt.gensalt()), randHashlink())
-initPending('newUser3@gmail.com', bcrypt.hashpw('password', bcrypt.gensalt()), randHashlink())
-initPending('newUser4@netflix.com', bcrypt.hashpw('password', bcrypt.gensalt()), randHashlink())
+initPending('newUser@yahoo.com', bcrypt.hashpw('password', bcrypt.gensalt()), randHashlink())
+initPending('newUser@hotmail.com', bcrypt.hashpw('password', bcrypt.gensalt()), randHashlink())
+initPending('newUser@gmail.com', bcrypt.hashpw('password', bcrypt.gensalt()), randHashlink())
+initPending('newUser@netflix.com', bcrypt.hashpw('password', bcrypt.gensalt()), randHashlink())
 # Generate fake users:
 print('  Generating fake users:')
 
@@ -71,17 +71,26 @@ def index():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-      
-      session['username'] = request.form['email']
+      hashword = getHashwordFromEmail(request.form['username'].lower())
+      #print('BCRYPT:', bcrypt.checkpw(request.form['password'].encode('utf-8'), hashword))
+      if hashword is not None:
+        if bcrypt.checkpw(request.form['password'].encode('utf-8'), hashword):
+          session['username'] = request.form['username'].lower()
+          return 'SUCCESSFUL LOGIN'
+        else:
+          return 'Incorrect password'
+      else:
+        return 'Unsuccessful Login'
       
       #c.execute('IF EXISTS (SELECT hashword FROM pending_students WHERE email = ?)', request.form["username"])
       #if bcrypt.checkpw(password, hashword):
       #  print("Password verified.")
     else:
       print("Incorrect username or password!")
-      return 'We will need to do things in the database...'
-    print(form.data)
-    return render_template('login.html', login=form)
+      #print(form.data)
+      #return 'Incorrect Username or password'
+      print(form.data)
+      return render_template('login.html', login=form)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -101,9 +110,19 @@ def register():
           #   print("It Matches!")
           #else:
           #   print("It Does not Match :(")
-          initPending(request.form["username"], hashword, randHashlink())
+
+          # Make sure the user doesn't already exists:
+          if checkPendingUser(request.form['username']):
+            initPending(request.form["username"], hashword, randHashlink())
+            return 'Awaiting Approval from Admins'
+          else:
+            return 'The email ' + request.form['username'] + ' already exists. You might need to wait to \
+              be approved from admins before logging in.'
+
+          
         else:
           print("Passwords do NOT match!")
+          return 'Passwords do NOT match.'
         
         # Need to save the CSRF token in database
         # This token will be used to access the user's personal database
@@ -124,6 +143,19 @@ def home(hash):
   print(hash)
   return 'User Page CSRF Token: '+ hash
 
+@app.route('/approveUser/<hash>', methods=['GET'])
+def approveUser(hash):
+  #print(hash)
+  newUser = initUser(hash)
+  if newUser is not None:
+    if 'email' in newUser:
+      return 'New User: ' + newUser['email'] + ' has been created.'
+    elif 'error' in newUser:
+      return 'Error: ' + newUser['error']
+  else:
+    return 'User was already approved.'
+
 if __name__ == '__main__':
   app.run(port=5000, debug=True)
   
+
