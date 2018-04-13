@@ -1,9 +1,23 @@
 <html>
   <title>SQL Database Project</title>
-<h1>Database</h1>
 
 <body>
+  <h1>Hello {{session.username}}</h1>
+  <h2>Database</h2>
+
+
   {% include "students.html" %}
+  
+  <p>
+
+  {% if not session.logged_in %}
+    <a href="{{ url_for('login') }}">log in</a>
+  {% else %}
+    <a href="{{ url_for('logout', cookie=session.csrf_token)}}">log out</a>
+  {% endif %}
+
+
+
 </body>
 
 

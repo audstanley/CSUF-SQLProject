@@ -1,15 +1,42 @@
 
 
 <h3> Students:</h3>
-  <table>
-    {% for i in someDataHere %}
+  <table style="width: 90%">
+    {% if studentTableMap %}
+      <tr>
+          <td> Student Id: </td>
+          <td> First Name: </td>
+          <td> Last Name: </td>
+          <td> Street: </td>
+          <td> City: </td>
+          <td> State: </td>
+          <td> Zip: </td>
+          <td> Phone: </td>
+          <td> Remove: </td>
+      </tr>
+    {% endif %}
+    
+    {% if not studentTableMap %}
+      &nbsp; None
+    {% endif %}
+
+    {% for i in studentTableMap %}
     <tr> 
-        <td> &nbsp; {{i.ssn}} </td>
-        <td> &nbsp; {{i.studentId}} </td>
-        <td> &nbsp; {{i.fname}} </td>
-        <td> &nbsp; {{i.lname}} </td>
+        <td> {{i.sId}} </td>
+        <td> {{i.fname}} </td>
+        <td> {{i.lname}} </td>
+        <td> {{i.street}} </td>
+        <td> {{i.city}} </td>
+        <td> {{i.state}} </td>
+        <td> {{i.zip}} </td>    
+        <td> {{i.phone}} </td>
+        <td>
+          <a href="{{ url_for('deleteStudent', cookie=session.csrf_token, sId=i.b64sId) }}">Delete</a>
+        </td>
     </tr>
     {% endfor %}
+
+    
   </table>
 
 
